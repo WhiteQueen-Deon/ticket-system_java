@@ -23,9 +23,9 @@ spring:
   # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/easy_ticket_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: root
+    url: ${DB_URL} #jdbc:mysql://localhost:3306/easy_ticket_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME} #root
+    password: ${DB_PASSWORD} #root
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       pool-name: HikariPool
@@ -52,8 +52,8 @@ spring:
   mail:
     host: imap.qq.com
     port: 587
-    username: 1294078961@qq.com # 邮箱地址
-    password: qufduggvfxfbbach # 邮箱授权码
+    username: ${MAIL_USERNAME} #1294078961@qq.com # 邮箱地址
+    password: ${MAIL_PASSWORD} #qufduggvfxfbbach # 邮箱授权码
     protocol: smtp
     properties:
       mail:
@@ -65,7 +65,7 @@ spring:
           ssl:
             enable: false  # 如果使用SSL端口，设置为true
           timeout: 5000
-          connection-timeout: 503.+-*500
+          connection-timeout: 5000 #503.+-*500
           write-timeout: 5000
     default-encoding: UTF-8
     test-connection: false
@@ -114,9 +114,9 @@ easy-ticket:
   # 邮件激活链接有效期（小时）
   activation-expire: 24
   # 系统邮箱地址（发件人显示地址）
-  system-email: 1294078961@qq.com
+  system-email: ${MAIL_USERNAME} #1294078961@qq.com
   # 系统域名（用于生成激活链接）
-  domain: http://localhost:8080
+  domain: ${APP_DOMAIN} # http://localhost:8080
   # PDF发票存储路径
   invoice-path: /invoices/
   # 验证码配置
