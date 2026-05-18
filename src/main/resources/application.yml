@@ -50,7 +50,7 @@ spring:
 
   # 邮件配置
   mail:
-    host: imap.qq.com
+    host: smtp.qq.com
     port: 587
     username: ${MAIL_USERNAME} #1294078961@qq.com # 邮箱地址
     password: ${MAIL_PASSWORD} #qufduggvfxfbbach # 邮箱授权码
