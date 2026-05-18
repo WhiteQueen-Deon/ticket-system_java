@@ -141,6 +141,7 @@
 <script src="${pageContext.request.contextPath}/static/layui/layui.js"></script>
 
 <script>
+    layui.config({ lang: 'en' });
     layui.use(['table', 'form', 'layer', 'jquery'], function(){
         var table = layui.table,
             form = layui.form,

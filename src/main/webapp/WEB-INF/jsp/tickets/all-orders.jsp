@@ -208,6 +208,7 @@
 <script src="${pageContext.request.contextPath}/static/layui/layui.js"></script>
 
 <script>
+    layui.config({ lang: 'en' });
     layui.use(['layer', 'form', 'laypage'], function(){
         var layer = layui.layer,
             form = layui.form,
