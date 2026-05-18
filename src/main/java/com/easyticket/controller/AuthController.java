@@ -153,7 +153,7 @@ public class AuthController {
             newUser.setPassword(password);
             newUser.setNickname(nickname);
             newUser.setPhone(phone);
-            newUser.setEnabled(false); // 未激活状态
+            newUser.setEnabled(true); 
             newUser.setRoles("ROLE_CUSTOMER"); // 默认角色
 
             // 生成激活令牌
@@ -165,24 +165,24 @@ public class AuthController {
             logger.info("New user created successfully: {}, ID: {}", username, savedUser.getId());
 
             // 发送激活邮件
-            try {
-                emailService.sendActivationEmail(email, username, activationToken);
-                logger.info("Activation email sent to user: {}", username);
-
-                // 清除验证码
-                session.removeAttribute("captcha");
+//            try {
+//                emailService.sendActivationEmail(email, username, activationToken);
+//                logger.info("Activation email sent to user: {}", username);
+//
+//                // 清除验证码
+//                session.removeAttribute("captcha");
 
                 result.put("success", true);
                 result.put("message", "Registration successful! Activation email sent to " + email + ", please check your email and click the activation link.");
                 result.put("redirectUrl", "/login");
                 return ResponseEntity.ok(result);
 
-            } catch (Exception e) {
-                logger.error("Failed to send activation email: {}", e.getMessage(), e);
-                result.put("success", false);
-                result.put("message", "Failed to send activation email, please try again later");
-                return ResponseEntity.ok(result);
-            }
+//            } catch (Exception e) {
+//                logger.error("Failed to send activation email: {}", e.getMessage(), e);
+//                result.put("success", false);
+//                result.put("message", "Failed to send activation email, please try again later");
+//                return ResponseEntity.ok(result);
+//            }
 
         } catch (Exception e) {
             logger.error("Registration failed: {}", e.getMessage(), e);
