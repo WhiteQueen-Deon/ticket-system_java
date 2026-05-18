@@ -15,10 +15,10 @@
     <groupId>com.easyticket</groupId>
     <artifactId>easy-ticket-system</artifactId>
     <version>1.0.0</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>Easy Ticket System</name>
-    <description>基于Spring Boot的简易购票系统</description>
+    <description>easy ticket system based on Spring Boot</description>
 
     <properties>
         <java.version>8</java.version>
@@ -78,6 +78,7 @@
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- JSTL for JSP -->

@@ -5,18 +5,23 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 /**
- * Easy Ticket System 主启动类
+ * Easy Ticket System
  * 
- * @author hxp
- * @version 1.0.0
  */
 @SpringBootApplication
 @MapperScan("com.easyticket.mapper")
 @EnableScheduling
 @EnableTransactionManagement
-public class EasyTicketApplication {
+public class EasyTicketApplication extends SpringBootServletInitializer{
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(EasyTicketApplication.class);
+    }
 
     public static void main(String[] args) {
         System.out.println("=== Easy Ticket System Starting ===");
