@@ -87,7 +87,7 @@ public class UserController {
 
             Map<String, Object> result = new HashMap<>();
             result.put("code", 0);
-            result.put("msg", "用户创建成功");
+            result.put("msg", "User created successfully");
             result.put("data", createdUser);
 
             return ResponseEntity.ok(result);
@@ -108,7 +108,7 @@ public class UserController {
 
             Map<String, Object> result = new HashMap<>();
             result.put("code", 0);
-            result.put("msg", "用户更新成功");
+            result.put("msg", "User updated successfully");
             result.put("data", updatedUser);
 
             return ResponseEntity.ok(result);
@@ -128,7 +128,7 @@ public class UserController {
 
             Map<String, Object> result = new HashMap<>();
             result.put("code", 0);
-            result.put("msg", "用户删除成功");
+            result.put("msg", "User deleted successfully");
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -151,7 +151,7 @@ public class UserController {
 
             Map<String, Object> result = new HashMap<>();
             result.put("code", 0);
-            result.put("msg", "批量删除成功");
+            result.put("msg", "Batch delete successful");
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -171,7 +171,7 @@ public class UserController {
 
             Map<String, Object> result = new HashMap<>();
             result.put("code", 0);
-            result.put("msg", "角色更新成功");
+            result.put("msg", "Role updated successfully");
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -191,7 +191,7 @@ public class UserController {
 
             Map<String, Object> result = new HashMap<>();
             result.put("code", 0);
-            result.put("msg", "状态更新成功");
+            result.put("msg", "Status updated successfully");
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -211,7 +211,7 @@ public class UserController {
 
             Map<String, Object> result = new HashMap<>();
             result.put("code", 0);
-            result.put("msg", "密码重置成功");
+            result.put("msg", "Password reset successfully");
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -237,7 +237,7 @@ public class UserController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("code", 500);
-            result.put("msg", "获取统计信息失败：" + e.getMessage());
+            result.put("msg", "Failed to get stats: " + e.getMessage());
             return ResponseEntity.ok(result);
         }
     }

@@ -38,7 +38,7 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- * 认证控制器
+ * Authentication controller
  *
  * @author hxp
  * @version 1.0.0
@@ -64,7 +64,7 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     /**
-     * 显示登录页面
+     * Show login page
      */
     @GetMapping("/login")
     public String login() {
@@ -72,7 +72,7 @@ public class AuthController {
     }
 
     /**
-     * 显示注册页面
+     * Show registration page
      */
     @GetMapping("/register")
     public String register() {
@@ -80,7 +80,7 @@ public class AuthController {
     }
 
     /**
-     * AJAX处理用户注册
+     * Handle user registration
      */
     @PostMapping("/api/register")
     @ResponseBody
@@ -101,48 +101,48 @@ public class AuthController {
             String sessionCaptcha = (String) session.getAttribute("captcha");
             if (sessionCaptcha == null || !sessionCaptcha.equalsIgnoreCase(captcha)) {
                 result.put("success", false);
-                result.put("message", "验证码错误");
+                result.put("message", "Invalid captcha");
                 return ResponseEntity.ok(result);
             }
 
-            // 验证密码确认
+            // Validate password确认
             if (!password.equals(confirmPassword)) {
                 result.put("success", false);
-                result.put("message", "两次输入的密码不一致");
+                result.put("message", "Passwords do not match");
                 return ResponseEntity.ok(result);
             }
 
             // 验证用户名长度
             if (username.length() < 3 || username.length() > 20) {
                 result.put("success", false);
-                result.put("message", "用户名长度必须在3-20个字符之间");
+                result.put("message", "Username must be between 3 and 20 characters");
                 return ResponseEntity.ok(result);
             }
 
-            // 验证密码长度
+            // Validate password长度
             if (password.length() < 6) {
                 result.put("success", false);
-                result.put("message", "密码至少6个字符");
+                result.put("message", "Password must be at least 6 characters");
                 return ResponseEntity.ok(result);
             }
 
             // 验证邮箱格式
             if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
                 result.put("success", false);
-                result.put("message", "邮箱格式不正确");
+                result.put("message", "Invalid email format");
                 return ResponseEntity.ok(result);
             }
 
             // 检查用户名和邮箱是否已存在
             if (userService.getUserByUsername(username) != null) {
                 result.put("success", false);
-                result.put("message", "用户名已存在，请选择其他用户名");
+                result.put("message", "Username already exists, please choose another");
                 return ResponseEntity.ok(result);
             }
 
             if (userService.getUserByEmail(email) != null) {
                 result.put("success", false);
-                result.put("message", "邮箱已被注册，请使用其他邮箱或找回密码");
+                result.put("message", "Email already registered, please use another email");
                 return ResponseEntity.ok(result);
             }
 
@@ -162,38 +162,38 @@ public class AuthController {
 
             // 保存用户到数据库
             User savedUser = userService.createUser(newUser);
-            logger.info("创建新用户成功: {}, ID: {}", username, savedUser.getId());
+            logger.info("New user created successfully: {}, ID: {}", username, savedUser.getId());
 
             // 发送激活邮件
             try {
                 emailService.sendActivationEmail(email, username, activationToken);
-                logger.info("激活邮件已发送给用户: {}", username);
+                logger.info("Activation email sent to user: {}", username);
 
                 // 清除验证码
                 session.removeAttribute("captcha");
 
                 result.put("success", true);
-                result.put("message", "注册成功！激活邮件已发送至 " + email + "，请查收邮件并点击激活链接完成账户激活。");
+                result.put("message", "Registration successful! Activation email sent to " + email + ", please check your email and click the activation link.");
                 result.put("redirectUrl", "/login");
                 return ResponseEntity.ok(result);
 
             } catch (Exception e) {
-                logger.error("发送激活邮件失败: {}", e.getMessage(), e);
+                logger.error("Failed to send activation email: {}", e.getMessage(), e);
                 result.put("success", false);
-                result.put("message", "发送激活邮件失败，请稍后重试或联系管理员");
+                result.put("message", "Failed to send activation email, please try again later");
                 return ResponseEntity.ok(result);
             }
 
         } catch (Exception e) {
-            logger.error("注册失败: {}", e.getMessage(), e);
+            logger.error("Registration failed: {}", e.getMessage(), e);
             result.put("success", false);
-            result.put("message", "注册失败：" + e.getMessage());
+            result.put("message", "Registration failed: " + e.getMessage());
             return ResponseEntity.ok(result);
         }
     }
 
     /**
-     * AJAX处理账户激活
+     * Handle account activation
      */
     @GetMapping("/api/activate")
     @ResponseBody
@@ -206,26 +206,26 @@ public class AuthController {
 
             if (tokenInfo == null) {
                 result.put("success", false);
-                result.put("message", "激活链接无效或已过期，请重新注册或联系管理员");
+                result.put("message", "Activation link is invalid or expired, please register again");
                 return ResponseEntity.ok(result);
             }
 
             String email = (String) tokenInfo.getData().get("email");
 
-            // 根据邮箱查找用户并激活
+            // 根据邮箱Find user并激活
             User user = userService.getUserByEmail(email);
             if (user != null && user.getActivationToken() != null && user.getActivationToken().equals(token)) {
                 user.setEnabled(true);
                 user.setActivationToken(null); // 清除激活令牌
                 userService.updateUser(user);
 
-                logger.info("用户账户激活成功: {}", user.getUsername());
+                logger.info("User account activated successfully: {}", user.getUsername());
                 result.put("success", true);
-                result.put("message", "账户激活成功！现在您可以登录系统了。");
+                result.put("message", "Account activated successfully! You can now log in.");
                 result.put("redirectUrl", "/login");
             } else {
                 result.put("success", false);
-                result.put("message", "激活失败：未找到对应的用户账户或激活令牌无效");
+                result.put("message", "Activation failed: user account not found or token invalid");
             }
 
             return ResponseEntity.ok(result);
@@ -233,13 +233,13 @@ public class AuthController {
         } catch (Exception e) {
             logger.error("账户激活失败: {}", e.getMessage(), e);
             result.put("success", false);
-            result.put("message", "激活失败：" + e.getMessage());
+            result.put("message", "Activation failed: " + e.getMessage());
             return ResponseEntity.ok(result);
         }
     }
 
     /**
-     * 处理账户激活页面显示
+     * Show account activation page
      */
     @GetMapping("/activate")
     public String activate(@RequestParam String token, Model model) {
@@ -248,7 +248,7 @@ public class AuthController {
     }
 
     /**
-     * AJAX登录状态检查接口
+     * Check login status
      */
     @GetMapping("/api/login-status")
     @ResponseBody
@@ -268,7 +268,7 @@ public class AuthController {
     }
 
     /**
-     * AJAX注销接口
+     * Handle logout
      */
     @PostMapping("/api/logout")
     @ResponseBody
@@ -278,18 +278,18 @@ public class AuthController {
         try {
             // Spring Security会自动处理注销
             result.put("success", true);
-            result.put("message", "注销成功");
+            result.put("message", "Logout successful");
             result.put("redirectUrl", "/login");
         } catch (Exception e) {
             result.put("success", false);
-            result.put("message", "注销失败");
+            result.put("message", "Logout failed");
         }
 
         return ResponseEntity.ok(result);
     }
 
     /**
-     * 重新发送激活邮件
+     * Resend activation email
      */
     @PostMapping("/api/resend-activation")
     @ResponseBody
@@ -300,28 +300,28 @@ public class AuthController {
             // 验证邮箱格式
             if (email == null || email.trim().isEmpty()) {
                 result.put("success", false);
-                result.put("message", "请输入邮箱地址");
+                result.put("message", "Please enter your email address");
                 return ResponseEntity.ok(result);
             }
 
             if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
                 result.put("success", false);
-                result.put("message", "邮箱格式不正确");
+                result.put("message", "Invalid email format");
                 return ResponseEntity.ok(result);
             }
 
-            // 查找用户
+            // Find user
             User user = userService.getUserByEmail(email.trim());
             if (user == null) {
                 result.put("success", false);
-                result.put("message", "该邮箱未注册，请先注册账户");
+                result.put("message", "This email is not registered, please register first");
                 return ResponseEntity.ok(result);
             }
 
             // 检查激活状态
             if (user.getEnabled()) {
                 result.put("success", false);
-                result.put("message", "账户已激活，无需重新发送激活邮件");
+                result.put("message", "Account is already activated");
                 return ResponseEntity.ok(result);
             }
 
@@ -335,22 +335,22 @@ public class AuthController {
             // 发送激活邮件
             emailService.sendActivationEmail(email.trim(), user.getUsername(), activationToken);
 
-            logger.info("重新发送激活邮件成功: {}", user.getUsername());
+            logger.info("Activation email resent successfully: {}", user.getUsername());
 
             result.put("success", true);
-            result.put("message", "激活邮件已重新发送至 " + email + "，请查收邮件并点击激活链接");
+            result.put("message", "Activation email resent to " + email + ", please check your email and click the activation link");
 
         } catch (Exception e) {
-            logger.error("重新发送激活邮件失败: {}", e.getMessage(), e);
+            logger.error("重新Failed to send activation email: {}", e.getMessage(), e);
             result.put("success", false);
-            result.put("message", "重新发送失败：" + e.getMessage());
+            result.put("message", "Resend failed: " + e.getMessage());
         }
 
         return ResponseEntity.ok(result);
     }
 
     /**
-     * 生成验证码
+     * Generate captcha
      */
     @GetMapping("/captcha")
     public void captcha(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
@@ -359,11 +359,11 @@ public class AuthController {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
 
-        // 生成验证码
+        // Generate captcha
         String captchaText = generateCaptchaText(4);
         session.setAttribute("captcha", captchaText);
 
-        // 创建验证码图片
+        // Create captcha image
         BufferedImage image = createCaptchaImage(captchaText, 120, 40);
 
         ServletOutputStream out = response.getOutputStream();
@@ -375,10 +375,10 @@ public class AuthController {
     }
 
     /**
-     * 生成验证码文本
+     * Generate captcha文本
      */
     private String generateCaptchaText(int length) {
-        String chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // 去掉容易混淆的字符
+        String chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // Remove easily confused characters
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {
@@ -388,7 +388,7 @@ public class AuthController {
     }
 
     /**
-     * 创建验证码图片
+     * Create captcha image
      */
     private BufferedImage createCaptchaImage(String text, int width, int height) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -437,7 +437,7 @@ public class AuthController {
     }
 
     /**
-     * AJAX处理用户登录
+     * Handle user login
      */
     @PostMapping("/api/login")
     @ResponseBody
@@ -451,65 +451,65 @@ public class AuthController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            // 验证用户名和密码
+            // Validate username and password
             if (username == null || username.trim().isEmpty()) {
                 result.put("success", false);
-                result.put("message", "请输入用户名");
+                result.put("message", "Please enter your username");
                 return ResponseEntity.ok(result);
             }
 
             if (password == null || password.trim().isEmpty()) {
                 result.put("success", false);
-                result.put("message", "请输入密码");
+                result.put("message", "Please enter your password");
                 return ResponseEntity.ok(result);
             }
 
-            // 查找用户
+            // Find user
             User user = userService.getUserByUsername(username.trim());
             if (user == null) {
                 result.put("success", false);
-                result.put("message", "用户名或密码错误");
+                result.put("message", "Invalid username or password");
                 return ResponseEntity.ok(result);
             }
 
-            // 检查账户是否已激活
+            // Check if account is activated
             if (!user.getEnabled()) {
                 result.put("success", false);
-                result.put("message", "账户未激活，请检查邮箱完成激活");
+                result.put("message", "Account not activated, please check your email");
                 return ResponseEntity.ok(result);
             }
 
-//             验证密码
+//             Validate password
             if (!passwordEncoder.matches(password, user.getPassword())) {
                 result.put("success", false);
-                result.put("message", "用户名或密码错误");
+                result.put("message", "Invalid username or password");
                 return ResponseEntity.ok(result);
             }
 
 
 
-            // 创建Spring Security认证信息
+            // Create Spring Security authentication
             UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(username, password);
 
             try {
                 Authentication authentication = authenticationManager.authenticate(authToken);
 
-                // 设置认证上下文
+                // Set authentication context
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                // 创建新的Session（防止Session固定攻击）
+                // Create new session (prevent session fixation attack)
                 session.invalidate();
                 session = request.getSession(true);
 
-                // 保存认证信息到Session
+                // Save authentication to session
                 session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                     SecurityContextHolder.getContext());
 
-                logger.info("用户登录成功: {}", username);
+                logger.info("User logged in successfully: {}", username);
 
                 result.put("success", true);
-                result.put("message", "登录成功");
+                result.put("message", "Login successful");
                 result.put("redirectUrl", "/");
                 result.put("user", Map.of(
                     "username", user.getUsername(),
@@ -521,26 +521,26 @@ public class AuthController {
 
             } catch (BadCredentialsException e) {
                 result.put("success", false);
-                result.put("message", "用户名或密码错误");
+                result.put("message", "Invalid username or password");
                 return ResponseEntity.ok(result);
             } catch (DisabledException e) {
                 result.put("success", false);
-                result.put("message", "账户已被禁用");
+                result.put("message", "Account has been disabled");
                 return ResponseEntity.ok(result);
             } catch (AccountExpiredException e) {
                 result.put("success", false);
-                result.put("message", "账户已过期");
+                result.put("message", "Account has expired");
                 return ResponseEntity.ok(result);
             } catch (LockedException e) {
                 result.put("success", false);
-                result.put("message", "账户已被锁定");
+                result.put("message", "Account has been locked");
                 return ResponseEntity.ok(result);
             }
 
         } catch (Exception e) {
             logger.error("登录失败: {}", e.getMessage(), e);
             result.put("success", false);
-            result.put("message", "登录失败：" + e.getMessage());
+            result.put("message", "Login failed: " + e.getMessage());
             return ResponseEntity.ok(result);
         }
     }

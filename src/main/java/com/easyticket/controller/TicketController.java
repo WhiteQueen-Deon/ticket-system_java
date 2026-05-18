@@ -199,7 +199,7 @@ public class TicketController {
                 result.put("data", order);
             } else {
                 result.put("code", 404);
-                result.put("msg", "订单不存在");
+                result.put("msg", "Order not found");
             }
 
             return ResponseEntity.ok(result);
@@ -245,7 +245,7 @@ public class TicketController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("code", 500);
-            result.put("msg", "获取订单列表失败：" + e.getMessage());
+            result.put("msg", "Failed to get order list: " + e.getMessage());
 
             return ResponseEntity.ok(result);
         }
@@ -267,7 +267,7 @@ public class TicketController {
             ticketService.cancelOrder(orderId, username);
 
             result.put("code", 0);
-            result.put("msg", "订单取消成功");
+            result.put("msg", "Order cancelled successfully");
 
         } catch (Exception e) {
             result.put("code", 500);
@@ -293,7 +293,7 @@ public class TicketController {
             ticketService.payOrder(orderId, username);
 
             result.put("code", 0);
-            result.put("msg", "支付成功");
+            result.put("msg", "Payment successful");
 
         } catch (Exception e) {
             result.put("code", 500);
@@ -338,7 +338,7 @@ public class TicketController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("code", 500);
-            result.put("msg", "获取订单列表失败：" + e.getMessage());
+            result.put("msg", "Failed to get order list: " + e.getMessage());
 
             return ResponseEntity.ok(result);
         }

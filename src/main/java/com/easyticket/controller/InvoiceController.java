@@ -41,41 +41,41 @@ public class InvoiceController {
     @GetMapping("/download/{orderId}")
     public ResponseEntity<?> downloadInvoice(@PathVariable Long orderId) {
         try {
-            // 获取当前登录用户
+            // Get current logged-in user
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
             User currentUser = userService.getUserByUsername(username);
 
             if (currentUser == null) {
                 Map<String, Object> result = new HashMap<>();
                 result.put("code", 401);
-                result.put("msg", "用户未登录");
+                result.put("msg", "User not logged in");
                 return ResponseEntity.ok(result);
             }
 
-            // 从数据库获取真实订单数据
+            // Get order data from database
             Order order = ticketService.getOrderById(orderId);
 
             if (order == null) {
                 Map<String, Object> result = new HashMap<>();
                 result.put("code", 404);
-                result.put("msg", "订单不存在");
+                result.put("msg", "Order not found");
                 return ResponseEntity.ok(result);
             }
 
-            // 检查订单所有权
+            // Check order ownership
             if (!order.getUser().getId().equals(currentUser.getId())) {
                 Map<String, Object> result = new HashMap<>();
                 result.put("code", 403);
-                result.put("msg", "无权限访问此订单发票");
+                result.put("msg", "No permission to access this invoice");
                 return ResponseEntity.ok(result);
             }
 
             InvoiceService.InvoiceData invoiceData = createInvoiceFromRealOrder(order);
 
-            // 生成PDF
+            // Generate PDF
             byte[] pdfBytes = invoiceService.generateInvoicePdf(invoiceData);
 
-            // 设置响应头
+            // Set response headers
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "invoice_" + order.getOrderNumber() + ".pdf");
@@ -86,7 +86,7 @@ public class InvoiceController {
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("code", 500);
-            result.put("msg", "生成发票失败：" + e.getMessage());
+            result.put("msg", "Failed to generate invoice: " + e.getMessage());
             return ResponseEntity.ok(result);
         }
     }
@@ -94,7 +94,7 @@ public class InvoiceController {
     private InvoiceService.InvoiceData createInvoiceFromRealOrder(Order order) {
         InvoiceService.InvoiceData invoiceData = new InvoiceService.InvoiceData();
 
-        // 基本信息
+        // Basic info
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -104,13 +104,13 @@ public class InvoiceController {
         invoiceData.setOrderNumber(order.getOrderNumber());
         invoiceData.setOrderDate(order.getOrderDate().format(dateFormatter));
 
-        // 客户信息
+        // Customer info
         User orderUser = order.getUser();
         invoiceData.setCustomerName(orderUser.getNickname() != null ? orderUser.getNickname() : orderUser.getUsername());
-        invoiceData.setCustomerPhone(orderUser.getPhone() != null ? orderUser.getPhone() : "未填写");
-        invoiceData.setCustomerEmail(orderUser.getEmail() != null ? orderUser.getEmail() : "未填写");
+        invoiceData.setCustomerPhone(orderUser.getPhone() != null ? orderUser.getPhone() : "Not provided");
+        invoiceData.setCustomerEmail(orderUser.getEmail() != null ? orderUser.getEmail() : "Not provided");
 
-        // 票务信息
+        // Ticket info
         List<InvoiceService.InvoiceData.TicketItem> ticketItems = new ArrayList<>();
 
         Event event = order.getEvent();
@@ -125,7 +125,7 @@ public class InvoiceController {
         ticketItems.add(ticketItem);
         invoiceData.setTicketItems(ticketItems);
 
-        // 费用信息
+        // Fee info
         BigDecimal ticketSubtotal = order.getTotalAmount();
         BigDecimal serviceFee = calculateServiceFee(ticketSubtotal);
         BigDecimal totalAmount = ticketSubtotal.add(serviceFee);
@@ -134,7 +134,7 @@ public class InvoiceController {
         invoiceData.setServiceFee(serviceFee);
         invoiceData.setTotalAmount(totalAmount);
 
-        // 支付信息
+        // Payment info
         String paymentMethod = getPaymentMethodByStatus(order.getStatus());
         String paymentStatus = getPaymentStatusText(order.getStatus());
         String paymentTime = getPaymentTimeText(order);
@@ -144,7 +144,7 @@ public class InvoiceController {
         invoiceData.setPaymentTime(paymentTime);
         invoiceData.setTransactionId("TXN" + order.getId() + order.getOrderDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 
-        // 备注信息
+        // Remarks
         String remarks = generateRemarksText(order);
         invoiceData.setRemarks(remarks);
 
@@ -152,7 +152,7 @@ public class InvoiceController {
     }
 
     /**
-     * 计算服务费
+     * Calculate service fee
      */
     private BigDecimal calculateServiceFee(BigDecimal ticketAmount) {
         BigDecimal feeRate = new BigDecimal("0.05");
@@ -163,32 +163,32 @@ public class InvoiceController {
     }
 
     /**
-     * 根据订单状态获取支付方式
+     * Get payment method by order status
      */
     private String getPaymentMethodByStatus(String status) {
         return switch (status) {
-            case "paid", "completed" -> "在线支付";
-            case "pending" -> "未支付";
-            case "cancelled" -> "已取消";
-            default -> "未知";
+            case "paid", "completed" -> "Online payment";
+            case "pending" -> "Unpaid";
+            case "cancelled" -> "Cancelled";
+            default -> "Unknown";
         };
     }
 
     /**
-     * 获取支付状态文本
+     * Get payment status text
      */
     private String getPaymentStatusText(String status) {
         return switch (status) {
-            case "paid" -> "已支付";
-            case "pending" -> "待支付";
-            case "cancelled" -> "已取消";
-            case "completed" -> "已完成";
+            case "paid" -> "Paid";
+            case "pending" -> "Pending payment";
+            case "cancelled" -> "Cancelled";
+            case "completed" -> "Completed";
             default -> status;
         };
     }
 
     /**
-     * 获取支付时间文本
+     * Get payment time text
      */
     private String getPaymentTimeText(Order order) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -196,30 +196,30 @@ public class InvoiceController {
         if (order.getPaymentTime() != null) {
             return order.getPaymentTime().format(formatter);
         } else if ("paid".equals(order.getStatus()) || "completed".equals(order.getStatus())) {
-            // 如果状态是已支付但没有支付时间，使用订单时间
+            // 如果状态是Paid但没有支付时间，使用订单时间
             return order.getOrderDate().format(formatter);
         } else {
-            return "未支付";
+            return "Unpaid";
         }
     }
 
     /**
-     * 生成备注信息
+     * 生成Remarks
      */
     private String generateRemarksText(Order order) {
         StringBuilder remarks = new StringBuilder();
-        remarks.append("感谢您选择我们的购票服务！");
+        remarks.append("Thank you for using our ticketing service!");
 
         if ("paid".equals(order.getStatus()) || "completed".equals(order.getStatus())) {
-            remarks.append("请携带有效证件前往活动现场。");
-            remarks.append("如需退换票请在演出前24小时联系客服。");
+            remarks.append("Please bring valid ID to the event.");
+            remarks.append("For refunds or exchanges, contact support 24 hours before the event.");
         } else if ("pending".equals(order.getStatus())) {
-            remarks.append("请尽快完成支付以确保座位预留。");
+            remarks.append("Please complete payment to secure your seat.");
         } else if ("cancelled".equals(order.getStatus())) {
-            remarks.append("此订单已取消，如有疑问请联系客服。");
+            remarks.append("此订单Cancelled，如有疑问请联系客服。");
         }
 
-        remarks.append("客服电话：123-456-7890");
+        remarks.append("Support: 123-456-7890");
 
         return remarks.toString();
     }

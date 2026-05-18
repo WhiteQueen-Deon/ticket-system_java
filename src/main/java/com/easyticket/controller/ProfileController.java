@@ -49,14 +49,14 @@ public class ProfileController {
                 result.put("data", user);
             } else {
                 result.put("code", 404);
-                result.put("msg", "用户不存在");
+                result.put("msg", "User not found");
             }
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             Map<String, Object> result = new HashMap<>();
             result.put("code", 500);
-            result.put("msg", "获取用户信息失败：" + e.getMessage());
+            result.put("msg", "Failed to get user info: " + e.getMessage());
             return ResponseEntity.ok(result);
         }
     }
@@ -71,11 +71,11 @@ public class ProfileController {
             if (user == null) {
                 Map<String, Object> result = new HashMap<>();
                 result.put("code", 404);
-                result.put("msg", "用户不存在");
+                result.put("msg", "User not found");
                 return ResponseEntity.ok(result);
             }
 
-            // 更新允许修改的字段
+            // Update allowed fields
             if (request.containsKey("email")) {
                 user.setEmail(request.get("email"));
             }
@@ -91,7 +91,7 @@ public class ProfileController {
 
             Map<String, Object> result = new HashMap<>();
             result.put("code", 0);
-            result.put("msg", "个人信息更新成功");
+            result.put("msg", "Profile updated successfully");
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -112,7 +112,7 @@ public class ProfileController {
             if (user == null) {
                 Map<String, Object> result = new HashMap<>();
                 result.put("code", 404);
-                result.put("msg", "用户不存在");
+                result.put("msg", "User not found");
                 return ResponseEntity.ok(result);
             }
 
@@ -123,7 +123,7 @@ public class ProfileController {
             if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
                 Map<String, Object> result = new HashMap<>();
                 result.put("code", 400);
-                result.put("msg", "原密码不正确");
+                result.put("msg", "Current password is incorrect");
                 return ResponseEntity.ok(result);
             }
 
@@ -132,7 +132,7 @@ public class ProfileController {
 
             Map<String, Object> result = new HashMap<>();
             result.put("code", 0);
-            result.put("msg", "密码修改成功");
+            result.put("msg", "Password changed successfully");
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {

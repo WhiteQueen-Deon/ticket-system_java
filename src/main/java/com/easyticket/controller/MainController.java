@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 主控制器
+ * Main controller
  *
  * @author hxp
  * @version 1.0.0
@@ -32,7 +32,7 @@ public class MainController {
     private UserService userService;
 
     /**
-     * 主框架页面
+     * Main frame page
      */
     @GetMapping({"/", "/main"})
     public String mainPage() {
@@ -40,7 +40,7 @@ public class MainController {
     }
 
     /**
-     * 系统首页
+     * System homepage
      */
     @GetMapping("/dashboard")
     public String dashboard() {
@@ -48,7 +48,7 @@ public class MainController {
     }
 
     /**
-     * 获取仪表盘统计数据
+     * Get dashboard stats
      */
     @GetMapping("/api/dashboard/stats")
     @ResponseBody
@@ -56,11 +56,11 @@ public class MainController {
         try {
             Map<String, Object> result = new HashMap<>();
             
-            // 获取活跃场次数量
+            // Get active event count
             long activeEventCount = eventService.getAllEventsCount(null, "ACTIVE");
             result.put("eventCount", activeEventCount);
             
-            // 获取今日订单统计数据
+            // Get today order stats
             Map<String, Object> todayOrderStats = ticketService.getTodayOrderStats();
             result.put("orderCount", todayOrderStats.get("todayOrders"));
             result.put("todayRevenue", todayOrderStats.get("todayRevenue"));
@@ -74,14 +74,14 @@ public class MainController {
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("code", 500);
-            response.put("msg", "获取统计数据失败：" + e.getMessage());
+            response.put("msg", "Failed to get stats: " + e.getMessage());
             
             return ResponseEntity.ok(response);
         }
     }
 
     /**
-     * 获取管理员专用统计数据
+     * Get admin stats
      */
     @GetMapping("/api/dashboard/admin-stats")
     @ResponseBody
@@ -90,7 +90,7 @@ public class MainController {
         try {
             Map<String, Object> result = new HashMap<>();
             
-            // 获取用户统计数据
+            // Get user stats
             Map<String, Object> userStats = userService.getUserStats();
             result.put("userCount", userStats.get("totalUsers"));
             
@@ -103,7 +103,7 @@ public class MainController {
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
             response.put("code", 500);
-            response.put("msg", "获取管理员统计数据失败：" + e.getMessage());
+            response.put("msg", "Failed to get admin stats: " + e.getMessage());
             
             return ResponseEntity.ok(response);
         }
