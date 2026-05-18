@@ -2,6 +2,15 @@
 
 A full-stack ticket booking web application built with Spring Boot. Users can browse events, purchase tickets, and manage their orders. Managers and administrators have additional tools for event and order management.
 
+**Live Demo:** [ticket-systemjava-production.up.railway.app](https://ticket-systemjava-production.up.railway.app)
+
+## Test Accounts
+
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | admin | admin123 |
+| Manager | manager1 | manager123 |
+
 ## Features
 
 **For Users**
