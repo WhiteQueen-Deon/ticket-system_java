@@ -50,10 +50,10 @@ spring:
 
   # 邮件配置
   mail:
-    host: smtp.qq.com
+    host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME} #1294078961@qq.com # 邮箱地址
-    password: ${MAIL_PASSWORD} #qufduggvfxfbbach # 邮箱授权码
+    username: ${MAIL_USERNAME} #deonued@gmail.com
+    password: ${MAIL_PASSWORD} #qeqtjoozaoutigod
     protocol: smtp
     properties:
       mail:
